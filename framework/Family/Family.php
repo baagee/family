@@ -33,8 +33,8 @@ class Family
             if (!defined('DS')) {
                 define('DS', DIRECTORY_SEPARATOR);
             }
-            self::$rootPath = dirname(dirname(__DIR__));
-            self::$frameworkPath = self::$rootPath . DS . 'framework';
+            self::$rootPath        = dirname(dirname(__DIR__));
+            self::$frameworkPath   = self::$rootPath . DS . 'framework';
             self::$applicationPath = self::$rootPath . DS . 'application';
 
             //先注册自动加载
@@ -55,17 +55,17 @@ class Family
                 file_put_contents(self::$rootPath . DS . 'bin' . DS . 'master.pid', $serv->master_pid);
                 file_put_contents(self::$rootPath . DS . 'bin' . DS . 'manager.pid', $serv->manager_pid);
                 Log::info("http server start! {host}: {port}, masterId:{masterId}, managerId: {managerId}", [
-                    '{host}' => Config::get('host'),
-                    '{port}' => Config::get('port'),
-                    '{masterId}' => $serv->master_pid,
+                    '{host}'      => Config::get('host'),
+                    '{port}'      => Config::get('port'),
+                    '{masterId}'  => $serv->master_pid,
                     '{managerId}' => $serv->manager_pid,
                 ]);
             });
 
             $http->on('shutdown', function () {
                 //服务关闭，删除进程id
-                unlink(self::$rootPath . 'DS' . 'bin' . DS . 'master.pid');
-                unlink(self::$rootPath . 'DS' . 'bin' . DS . 'manager.pid');
+                unlink(self::$rootPath . DS . 'bin' . DS . 'master.pid');
+                unlink(self::$rootPath . DS . 'bin' . DS . 'manager.pid');
                 Log::info("http server shutdown");
             });
             $http->on('workerStart', function (\swoole_http_server $serv, int $worker_id) {
