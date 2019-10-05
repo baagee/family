@@ -7,7 +7,6 @@ use Family\Core\Log;
 use Family\Core\Route;
 use Family\Coroutine\Context;
 use Family\Coroutine\Coroutine;
-use Family\Helper\Template;
 use Swoole;
 
 
@@ -45,13 +44,14 @@ class Family
             $timeZone = Config::get('time_zone', 'Asia/Shanghai');
             \date_default_timezone_set($timeZone);
 
-            //通过读取配置获得ip、端口等
+            //通过读取配置获得ip、端口等 创建一个HttpServer
             $http = new Swoole\Http\Server(Config::get('host'), Config::get('port'));
-            $http->set(Config::get('swoole_setting'));
+            $http->set(Config::get('swoole_setting'));// 设置配置
             $http->on('start', function (\swoole_server $serv) {
-                //服务启动
+                //服务启动时
                 //日志初始化
                 Log::init();
+                // 保存PID
                 file_put_contents(self::$rootPath . DS . 'bin' . DS . 'master.pid', $serv->master_pid);
                 file_put_contents(self::$rootPath . DS . 'bin' . DS . 'manager.pid', $serv->manager_pid);
                 Log::info("http server start! {host}: {port}, masterId:{masterId}, managerId: {managerId}", [
