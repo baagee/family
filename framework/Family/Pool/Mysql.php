@@ -3,11 +3,14 @@
 namespace Family\Pool;
 
 use Family\Db\Mysql as DB;
-use chan;
+use Swoole\Coroutine\Channel;
 
 class Mysql implements PoolInterface
 {
     private static $instances;
+    /**
+     * @var Channel
+     */
     private $pool;  //连接池容器，一个channel
     private $config;
 
@@ -49,10 +52,10 @@ class Mysql implements PoolInterface
     {
         if (empty($this->pool)) {
             $this->config = $config;
-            $this->pool = new chan($config['pool_size']);
+            $this->pool   = new Channel($config['pool_size']);
             for ($i = 0; $i < $config['pool_size']; $i++) {
                 $mysql = new DB();
-                $res = $mysql->connect($config);
+                $res   = $mysql->connect($config);
                 if ($res == false) {
                     //连接失败，抛弃常
                     throw new \Exception("failed to connect mysql server.");
@@ -101,8 +104,7 @@ class Mysql implements PoolInterface
     }
 
     /**
-     * @return bool|mixed
-     * @desc 回收处理
+     * @return bool|mixed|void
      */
     public function release()
     {
